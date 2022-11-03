@@ -1,54 +1,123 @@
 package com.example.myapplication;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
+import android.view.ContextMenu;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private TextView textViewHelloWorld;
-    private Button buttonPrevious;
-    private Button buttonNext;
-    private ImageView imageViewFunny;
-    private int[] imageIDArray={R.drawable.funny_1, R.drawable.funny_2, R.drawable.funny_3, R.drawable.funny_4,
-            R.drawable.funny_5};;
-    private int imageIDArrayCurrentIndex;
-
-    public MainActivity(){
-        imageIDArrayCurrentIndex=0;
-    }
-
+    public static final int MENU_ID_ADD = 1;
+    public static final int MENU_IN_UPDATE = 2;
+    public static final int MENU_ID_DELETE = 3;
+    private ArrayList<String> mainStringSet;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        textViewHelloWorld=findViewById(R.id.text_hello_world);
-        buttonPrevious=findViewById(R.id.button_previous);
-        buttonNext=findViewById(R.id.button_next);
-        imageViewFunny=findViewById(R.id.imageView);
-        buttonPrevious.setOnClickListener(new MyButtonClickListener());
-        buttonNext.setOnClickListener(new MyButtonClickListener());
+
+        RecyclerView recyclerViewMain=findViewById(R.id.recycleview);
+
+        LinearLayoutManager linearLayoutManager=new LinearLayoutManager(this);
+        linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerViewMain.setLayoutManager(linearLayoutManager);
+
+        mainStringSet = new ArrayList<String>();
+        for(int i=0;i<10;i++)
+        {
+            mainStringSet.add("item"+i);
+        }
+        MainRecycleViewAdapter mainRecycleViewAdapter=new MainRecycleViewAdapter(mainStringSet);
+        recyclerViewMain.setAdapter(mainRecycleViewAdapter);
+
     }
 
-    private class MyButtonClickListener implements View.OnClickListener {
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+        switch(item.getItemId())
+        {
+            case MENU_ID_ADD:
+                Toast.makeText(this,"item add"+item.getOrder()+"clicked!",Toast.LENGTH_LONG)
+                        .show();
+                break;
+            case MENU_IN_UPDATE:
+                Toast.makeText(this,"item update"+item.getOrder()+"clicked!",Toast.LENGTH_LONG)
+                        .show();
+                break;
+            case MENU_ID_DELETE:
+                Toast.makeText(this,"item delete"+item.getOrder()+"clicked!",Toast.LENGTH_LONG)
+                        .show();
+                break;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    public class MainRecycleViewAdapter extends RecyclerView.Adapter<MainRecycleViewAdapter.ViewHolder>{
+
+        private ArrayList<String> localDataSet;
+
+        public class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
+            private final TextView textView;
+            private final ImageView imgaeViewImage;
+
+            public ViewHolder(View view) {
+                super(view);
+                imgaeViewImage=view.findViewById(R.id.imageview_item_image);
+                textView=view.findViewById(R.id.textView);
+
+                view.setOnCreateContextMenuListener(this);
+            }
+
+            public TextView getTextView(){
+                return textView;
+            }
+
+            public ImageView getImgaeViewImage() {
+                return imgaeViewImage;
+            }
+
+            @Override
+            public void onCreateContextMenu(ContextMenu contextMenu, View view, ContextMenu.ContextMenuInfo contextMenuInfo) {
+                contextMenu.add(0,MENU_ID_ADD,getAdapterPosition(),"Add"+getAdapterPosition());
+                contextMenu.add(0,MENU_IN_UPDATE,getAdapterPosition(),"Update"+getAdapterPosition());
+                contextMenu.add(0,MENU_ID_DELETE,getAdapterPosition(),"Delete"+getAdapterPosition());
+
+            }
+        }
+
+        public MainRecycleViewAdapter(ArrayList<String> dataSet){
+            localDataSet=dataSet;
+        }
         @Override
-        public void onClick(View view) {
-            if(view==buttonNext)
-            {
-                imageIDArrayCurrentIndex++;
-                if(imageIDArrayCurrentIndex>=imageIDArray.length) imageIDArrayCurrentIndex=0;
-            }
-            else
-            {
-                imageIDArrayCurrentIndex--;
-                if(imageIDArrayCurrentIndex<0) imageIDArrayCurrentIndex=imageIDArray.length-1;
-            }
-            imageViewFunny.setImageResource(imageIDArray[imageIDArrayCurrentIndex]);
+        public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
+            View view = LayoutInflater.from(viewGroup.getContext())
+                    .inflate(R.layout.item_main, viewGroup, false);
+            return new ViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(ViewHolder viewHolder,final int position) {
+            viewHolder.getTextView().setText(localDataSet.get(position));
+            viewHolder.getImgaeViewImage().setImageResource(position%2==1?R.drawable.funny_2:R.drawable.funny_4);
+
+        }
+
+        @Override
+        public int getItemCount() {
+            return localDataSet.size();
         }
     }
 }
