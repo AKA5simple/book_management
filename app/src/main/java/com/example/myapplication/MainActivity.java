@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
             localDataSet=dataSet;
         }
         @Override
+        @NonNull
         public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
             View view = LayoutInflater.from(viewGroup.getContext())
                     .inflate(R.layout.item_main, viewGroup, false);
