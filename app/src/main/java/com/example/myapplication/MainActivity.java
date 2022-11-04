@@ -1,11 +1,12 @@
 package com.example.myapplication;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -14,7 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.example.myapplication.data.ShopItem;
 
 import java.util.ArrayList;
 
@@ -23,7 +25,9 @@ public class MainActivity extends AppCompatActivity {
     public static final int MENU_ID_ADD = 1;
     public static final int MENU_IN_UPDATE = 2;
     public static final int MENU_ID_DELETE = 3;
-    private ArrayList<String> mainStringSet;
+    private ArrayList<ShopItem> shopItems;
+    private MainRecycleViewAdapter mainRecycleViewAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,12 +39,12 @@ public class MainActivity extends AppCompatActivity {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerViewMain.setLayoutManager(linearLayoutManager);
 
-        mainStringSet = new ArrayList<String>();
-        for(int i=0;i<10;i++)
+        shopItems = new ArrayList<>();
+        for(int i=0;i<20;i++)
         {
-            mainStringSet.add("item"+i);
+            shopItems.add(new ShopItem("item"+i,Math.random()*10,i%2==1?R.drawable.funny_2:R.drawable.funny_3));
         }
-        MainRecycleViewAdapter mainRecycleViewAdapter=new MainRecycleViewAdapter(mainStringSet);
+        mainRecycleViewAdapter= new MainRecycleViewAdapter(shopItems);
         recyclerViewMain.setAdapter(mainRecycleViewAdapter);
 
     }
@@ -50,16 +54,33 @@ public class MainActivity extends AppCompatActivity {
         switch(item.getItemId())
         {
             case MENU_ID_ADD:
-                Toast.makeText(this,"item add"+item.getOrder()+"clicked!",Toast.LENGTH_LONG)
-                        .show();
+                shopItems.add(item.getOrder(),new ShopItem("added"+item.getOrder(),Math.random()*10,R.drawable.funny_1));
+                mainRecycleViewAdapter.notifyItemInserted(item.getOrder());
                 break;
             case MENU_IN_UPDATE:
-                Toast.makeText(this,"item update"+item.getOrder()+"clicked!",Toast.LENGTH_LONG)
-                        .show();
+                shopItems.get(item.getOrder()).setTitle("updated");
+                mainRecycleViewAdapter.notifyItemChanged(item.getOrder());
                 break;
             case MENU_ID_DELETE:
-                Toast.makeText(this,"item delete"+item.getOrder()+"clicked!",Toast.LENGTH_LONG)
-                        .show();
+                AlertDialog alertDialog=new AlertDialog.Builder(this)
+                        .setTitle(R.string.confirmation)
+                                .setMessage(R.string.sure_to_delete)
+
+                                        .setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialogInterface, int i) {
+                                                shopItems.remove(item.getOrder());
+                                                mainRecycleViewAdapter.notifyItemRemoved(item.getOrder());
+
+                                            }
+                                        }).setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+
+                            }
+                        }).create();
+                alertDialog.show();
                 break;
         }
         return super.onContextItemSelected(item);
@@ -67,26 +88,33 @@ public class MainActivity extends AppCompatActivity {
 
     public class MainRecycleViewAdapter extends RecyclerView.Adapter<MainRecycleViewAdapter.ViewHolder>{
 
-        private ArrayList<String> localDataSet;
+        private ArrayList<ShopItem> localDataSet;
 
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
-            private final TextView textView;
-            private final ImageView imgaeViewImage;
+            private final TextView textViewTitle;
+
+            public TextView getTextViewPrice() {
+                return textViewPrice;
+            }
+
+            private final TextView textViewPrice;
+            private final ImageView imageViewImage;
 
             public ViewHolder(View view) {
                 super(view);
-                imgaeViewImage=view.findViewById(R.id.imageview_item_image);
-                textView=view.findViewById(R.id.textView);
+                imageViewImage=view.findViewById(R.id.imageview_item_image);
+                textViewTitle=view.findViewById(R.id.textview_item_caption);
+                textViewPrice=view.findViewById(R.id.textview_item_price);
 
                 view.setOnCreateContextMenuListener(this);
             }
 
-            public TextView getTextView(){
-                return textView;
+            public TextView getTextViewTitle(){
+                return textViewTitle;
             }
 
-            public ImageView getImgaeViewImage() {
-                return imgaeViewImage;
+            public ImageView getImageViewImage() {
+                return imageViewImage;
             }
 
             @Override
@@ -98,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        public MainRecycleViewAdapter(ArrayList<String> dataSet){
+        public MainRecycleViewAdapter(ArrayList<ShopItem> dataSet){
             localDataSet=dataSet;
         }
         @Override
@@ -111,8 +139,9 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(ViewHolder viewHolder,final int position) {
-            viewHolder.getTextView().setText(localDataSet.get(position));
-            viewHolder.getImgaeViewImage().setImageResource(position%2==1?R.drawable.funny_2:R.drawable.funny_4);
+            viewHolder.getTextViewTitle().setText(localDataSet.get(position).getTitle());
+            viewHolder.getTextViewPrice().setText(localDataSet.get(position).getPrice().toString());
+            viewHolder.getImageViewImage().setImageResource(localDataSet.get(position).getResourceId());
 
         }
 
