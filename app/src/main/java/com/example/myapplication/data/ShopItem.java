@@ -1,6 +1,8 @@
 package com.example.myapplication.data;
 
-public class ShopItem {
+import java.io.Serializable;
+
+public class ShopItem implements Serializable {
 
     public ShopItem(String title,Double price,int resourceId) {
         this.title=title;

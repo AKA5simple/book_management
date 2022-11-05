@@ -1,7 +1,6 @@
 package com.example.myapplication;
 
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContract;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -19,8 +18,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.myapplication.data.DataSaver;
 import com.example.myapplication.data.ShopItem;
 
 import java.util.ArrayList;
@@ -33,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<ShopItem> shopItems;
     private MainRecycleViewAdapter mainRecycleViewAdapter;
 
+
+
     private ActivityResultLauncher<Intent> addDataLauncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
             result ->{
         if(null!=result){
@@ -43,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
                 double price=bundle.getDouble("price");
                 int position=bundle.getInt("position");
                 shopItems.add(position,new ShopItem(title,price,R.drawable.funny_1));
+                new DataSaver().Save(this,shopItems);
                 mainRecycleViewAdapter.notifyItemInserted(position);
             }
 
@@ -59,6 +61,7 @@ public class MainActivity extends AppCompatActivity {
                         int position=bundle.getInt("position");
                         shopItems.get(position).setTitle(title);
                         shopItems.get(position).setPrice(price);
+                        new DataSaver().Save(this,shopItems);
                         mainRecycleViewAdapter.notifyItemChanged(position);
                     }
 
@@ -68,6 +71,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         RecyclerView recyclerViewMain=findViewById(R.id.recycleview);
@@ -76,10 +80,11 @@ public class MainActivity extends AppCompatActivity {
         linearLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         recyclerViewMain.setLayoutManager(linearLayoutManager);
 
-        shopItems = new ArrayList<>();
-        for(int i=0;i<20;i++)
-        {
-            shopItems.add(new ShopItem("item"+i,Math.random()*10,i%2==1?R.drawable.funny_2:R.drawable.funny_3));
+        DataSaver dataSaver=new DataSaver();
+        shopItems=dataSaver.Load(this);
+
+        if(shopItems.size()==0) {
+            shopItems.add(new ShopItem("item", Math.random() * 10, R.drawable.funny_2));
         }
         mainRecycleViewAdapter= new MainRecycleViewAdapter(shopItems);
         recyclerViewMain.setAdapter(mainRecycleViewAdapter);
@@ -111,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                                             @Override
                                             public void onClick(DialogInterface dialogInterface, int i) {
                                                 shopItems.remove(item.getOrder());
+                                                new DataSaver().Save(MainActivity.this,shopItems);
                                                 mainRecycleViewAdapter.notifyItemRemoved(item.getOrder());
 
                                             }
