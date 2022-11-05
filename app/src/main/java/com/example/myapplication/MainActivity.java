@@ -1,5 +1,8 @@
 package com.example.myapplication;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContract;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -7,6 +10,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -15,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.myapplication.data.ShopItem;
 
@@ -27,6 +32,38 @@ public class MainActivity extends AppCompatActivity {
     public static final int MENU_ID_DELETE = 3;
     private ArrayList<ShopItem> shopItems;
     private MainRecycleViewAdapter mainRecycleViewAdapter;
+
+    private ActivityResultLauncher<Intent> addDataLauncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result ->{
+        if(null!=result){
+            Intent intent=result.getData();
+            if(result.getResultCode()==InputShopItemActivity.RESULT_CODE_SUCCESS){
+                Bundle bundle=intent.getExtras();
+                String title=bundle.getString("title");
+                double price=bundle.getDouble("price");
+                int position=bundle.getInt("position");
+                shopItems.add(position,new ShopItem(title,price,R.drawable.funny_1));
+                mainRecycleViewAdapter.notifyItemInserted(position);
+            }
+
+        }
+            } );
+    private ActivityResultLauncher<Intent> updateDataLauncher=registerForActivityResult(new ActivityResultContracts.StartActivityForResult(),
+            result ->{
+                if(null!=result){
+                    Intent intent=result.getData();
+                    if(result.getResultCode()==InputShopItemActivity.RESULT_CODE_SUCCESS){
+                        Bundle bundle=intent.getExtras();
+                        String title=bundle.getString("title");
+                        double price=bundle.getDouble("price");
+                        int position=bundle.getInt("position");
+                        shopItems.get(position).setTitle(title);
+                        shopItems.get(position).setPrice(price);
+                        mainRecycleViewAdapter.notifyItemChanged(position);
+                    }
+
+                }
+            } );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,12 +91,16 @@ public class MainActivity extends AppCompatActivity {
         switch(item.getItemId())
         {
             case MENU_ID_ADD:
-                shopItems.add(item.getOrder(),new ShopItem("added"+item.getOrder(),Math.random()*10,R.drawable.funny_1));
-                mainRecycleViewAdapter.notifyItemInserted(item.getOrder());
+                Intent intent=new Intent(this, InputShopItemActivity.class);
+                intent.putExtra("position",item.getOrder());
+                addDataLauncher.launch(intent);
                 break;
             case MENU_IN_UPDATE:
-                shopItems.get(item.getOrder()).setTitle("updated");
-                mainRecycleViewAdapter.notifyItemChanged(item.getOrder());
+                Intent intentUpdate=new Intent(this, InputShopItemActivity.class);
+                intentUpdate.putExtra("position",item.getOrder());
+                intentUpdate.putExtra("title",shopItems.get(item.getOrder()).getTitle());
+                intentUpdate.putExtra("price",shopItems.get(item.getOrder()).getPrice());
+                updateDataLauncher.launch(intentUpdate);
                 break;
             case MENU_ID_DELETE:
                 AlertDialog alertDialog=new AlertDialog.Builder(this)
