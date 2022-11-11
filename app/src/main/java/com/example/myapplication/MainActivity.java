@@ -28,6 +28,8 @@ public class MainActivity extends AppCompatActivity {
             {
                 case 0  :
                     return ShopItemFragment.newInstance();
+                case 1  :
+                    return BaiduMapFragment.newInstance();
                 case 2:
                     return BrowserFragment.newInstance();
             }
