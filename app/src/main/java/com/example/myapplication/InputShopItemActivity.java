@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
-public class InputShopItemActivity extends AppCompatActivity {
+public class         InputShopItemActivity extends AppCompatActivity {
 
     public static final int RESULT_CODE_SUCCESS = 666;
     private int position;
@@ -20,7 +20,7 @@ public class InputShopItemActivity extends AppCompatActivity {
 
         position=this.getIntent().getIntExtra("position",0);
         String title=this.getIntent().getStringExtra("title");
-        Double price=this.getIntent().getDoubleExtra("price",0);
+        String author=this.getIntent().getStringExtra("price");
 
         EditText editTextTitle=findViewById(R.id.edittext_shop_item_title);
         EditText editTextPrice=findViewById(R.id.edittext_shop_item_title_price);
@@ -28,7 +28,7 @@ public class InputShopItemActivity extends AppCompatActivity {
         if(null!=title)
         {
             editTextTitle.setText(title);
-            editTextPrice.setText(price.toString()) ;
+            editTextPrice.setText(author) ;
         }
 
 
@@ -40,8 +40,7 @@ public class InputShopItemActivity extends AppCompatActivity {
                 Intent intent=new Intent();
                 Bundle bundle=new Bundle();
                 bundle.putString("title",editTextTitle.getText().toString());
-                double price=Double.parseDouble(editTextPrice.getText().toString());
-                bundle.putDouble("price",price);
+                bundle.putString("author",editTextTitle.getText().toString());
                 bundle.putInt("position",position);
 
                 intent.putExtras(bundle);

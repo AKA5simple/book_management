@@ -41,9 +41,10 @@ public class MainActivity extends AppCompatActivity {
             if(result.getResultCode()==InputShopItemActivity.RESULT_CODE_SUCCESS){
                 Bundle bundle=intent.getExtras();
                 String title=bundle.getString("title");
-                double price=bundle.getDouble("price");
+                String author=bundle.getString("author");
+                String year=bundle.getString("year");
                 int position=bundle.getInt("position");
-                shopItems.add(position,new ShopItem(title,price,R.drawable.funny_1));
+                shopItems.add(position,new ShopItem(title,author,year,R.drawable.book3));
                 new DataSaver().Save(this,shopItems);
                 mainRecycleViewAdapter.notifyItemInserted(position);
             }
@@ -57,10 +58,10 @@ public class MainActivity extends AppCompatActivity {
                     if(result.getResultCode()==InputShopItemActivity.RESULT_CODE_SUCCESS){
                         Bundle bundle=intent.getExtras();
                         String title=bundle.getString("title");
-                        double price=bundle.getDouble("price");
+                        String author=bundle.getString("author");
                         int position=bundle.getInt("position");
                         shopItems.get(position).setTitle(title);
-                        shopItems.get(position).setPrice(price);
+                        shopItems.get(position).setAuthor(author);
                         new DataSaver().Save(this,shopItems);
                         mainRecycleViewAdapter.notifyItemChanged(position);
                     }
@@ -84,7 +85,7 @@ public class MainActivity extends AppCompatActivity {
         shopItems=dataSaver.Load(this);
 
         if(shopItems.size()==0) {
-            shopItems.add(new ShopItem("item", Math.random() * 10, R.drawable.funny_2));
+            shopItems.add(new ShopItem("Android群英传","徐宣生 著,电子工业出版社","2015-11",R.drawable.book5));
         }
         mainRecycleViewAdapter= new MainRecycleViewAdapter(shopItems);
         recyclerViewMain.setAdapter(mainRecycleViewAdapter);
@@ -104,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intentUpdate=new Intent(this, InputShopItemActivity.class);
                 intentUpdate.putExtra("position",item.getOrder());
                 intentUpdate.putExtra("title",shopItems.get(item.getOrder()).getTitle());
-                intentUpdate.putExtra("price",shopItems.get(item.getOrder()).getPrice());
+                intentUpdate.putExtra("price",shopItems.get(item.getOrder()).getTitle());
                 updateDataLauncher.launch(intentUpdate);
                 break;
             case MENU_ID_DELETE:
@@ -140,18 +141,24 @@ public class MainActivity extends AppCompatActivity {
         public class ViewHolder extends RecyclerView.ViewHolder implements View.OnCreateContextMenuListener {
             private final TextView textViewTitle;
 
-            public TextView getTextViewPrice() {
-                return textViewPrice;
+            public TextView getTextViewAuthor() {
+                return textViewAuthor;
             }
 
-            private final TextView textViewPrice;
+            private final TextView textViewAuthor;
             private final ImageView imageViewImage;
+            private final TextView textViewYear;
+
+            public TextView getTextViewYear() {
+                return textViewYear;
+            }
 
             public ViewHolder(View view) {
                 super(view);
                 imageViewImage=view.findViewById(R.id.imageview_item_image);
                 textViewTitle=view.findViewById(R.id.textview_item_caption);
-                textViewPrice=view.findViewById(R.id.textview_item_price);
+                textViewAuthor=view.findViewById(R.id.textview_item_price);
+                textViewYear=view.findViewById(R.id.textview_item_year);
 
                 view.setOnCreateContextMenuListener(this);
             }
@@ -187,7 +194,8 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onBindViewHolder(ViewHolder viewHolder,final int position) {
             viewHolder.getTextViewTitle().setText(localDataSet.get(position).getTitle());
-            viewHolder.getTextViewPrice().setText(localDataSet.get(position).getPrice().toString());
+            viewHolder.getTextViewAuthor().setText(localDataSet.get(position).getAuthor());
+            viewHolder.getTextViewYear().setText(localDataSet.get(position).getYear());
             viewHolder.getImageViewImage().setImageResource(localDataSet.get(position).getResourceId());
 
         }
