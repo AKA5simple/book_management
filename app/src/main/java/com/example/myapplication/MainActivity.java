@@ -1,17 +1,8 @@
 package com.example.myapplication;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -21,8 +12,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.myapplication.data.DataSaver;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.myapplication.data.BookItem;
+import com.example.myapplication.data.DataSaver;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.ArrayList;
 
@@ -33,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     public static final int MENU_ID_DELETE = 3;
     private ArrayList<BookItem> shopItems;
     private MainRecycleViewAdapter mainRecycleViewAdapter;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
 
 
 
@@ -85,6 +88,17 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+
+        drawerLayout=(DrawerLayout)findViewById(R.id.drawers_menu);
+        Button button_drawer_layout=(Button)findViewById(R.id.drawers);
+        navigationView=(NavigationView)findViewById(R.id.navigation_view);
+        button_drawer_layout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawerLayout.openDrawer(navigationView);
+            }
+        });
 
         Button button_add=(Button)findViewById(R.id.add);
         button_add.setOnClickListener(new View.OnClickListener() {
@@ -249,10 +263,8 @@ public class MainActivity extends AppCompatActivity {
             viewHolder.getTextViewAuthor().setText(localDataSet.get(position).getAuthor());
             viewHolder.getTextViewYear().setText(localDataSet.get(position).getYear());
             viewHolder.getImageViewImage().setImageResource(localDataSet.get(position).getResourceId());
-            //viewHolder.getTextViewTranslator().setText(localDataSet.get(position).getTranslator());
-            //viewHolder.getTextViewPublisher().setText(localDataSet.get(position).getPublisher());
-            //viewHolder.getTextViewPutdate().setText(localDataSet.get(position).getPutdate());
-            //viewHolder.getTextViewIsbn().setText(localDataSet.get(position).getIsbn());
+
+
         }
 
         @Override
