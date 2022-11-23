@@ -12,7 +12,8 @@
         <ImageView
             android:id="@+id/title_page"
             android:layout_width="match_parent"
-            android:layout_height="64dp"/>
+            android:layout_height="200dp"
+            android:background="@drawable/book1"/>
 
         <LinearLayout
             android:layout_width="match_parent"

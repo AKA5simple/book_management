@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    tools:ignore="MissingConstraints"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".MainActivity">
+
+        <Button
+            android:id="@+id/button_exit"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/exit"
+            android:gravity="left" />
+        <ImageView
+            android:id="@+id/imageview_about"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="@drawable/introduction"
+            android:layout_marginBottom="100dp" />
+        <TextView
+            android:id="@+id/text_about"
+            android:gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="这是一个可以进行图书管理的app，在这个app中你可以使用添加，更新和删除等功能，但是由于目前的开发者的能力有限，还有很多功能未能实现，请使用者敬请期待，同时也非常欢迎使用者对开发者提供建议，谢谢！" />
+</LinearLayout>

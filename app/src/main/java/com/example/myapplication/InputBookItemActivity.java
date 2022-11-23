@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 
 public class InputBookItemActivity extends AppCompatActivity {
 
@@ -25,6 +26,7 @@ public class InputBookItemActivity extends AppCompatActivity {
         String publisher=this.getIntent().getStringExtra("publisher");
         String putdate=this.getIntent().getStringExtra("putdate");
         String isbn=this.getIntent().getStringExtra("isbn");
+
 
         EditText editTextTitle=findViewById(R.id.edittext_shop_item_title);
         EditText editTextAuthor=findViewById(R.id.edittext_shop_item_title_price);

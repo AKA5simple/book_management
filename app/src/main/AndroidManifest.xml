@@ -14,8 +14,11 @@
         android:theme="@style/Theme.MyApplication"
         tools:targetApi="31">
         <activity
+            android:name=".AboutActivity"
+            android:exported="false" />
+        <activity
             android:name=".InputBookItemActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true">
